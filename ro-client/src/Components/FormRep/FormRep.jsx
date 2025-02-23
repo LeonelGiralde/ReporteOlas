@@ -52,10 +52,59 @@ function FormReporte() {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log({ fecha, reportes }); // Aquí puedes manejar el envío de los datos
+  
+    // Prepara los datos para enviar
+    const reportData = {
+      fecha,
+      reportes: Object.keys(reportes).map((ubicacion) => ({
+        ubicacion,
+        ...reportes[ubicacion], // Esto incluye todos los campos, incluyendo noReporte
+      })),
+    };
+  
+    // Envía el reporte al backend
+    try {
+      const response = await fetch('http://localhost:5000/api/reportes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reportData), // Enviar la estructura modificada
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.message); // Maneja la respuesta según sea necesario
+        // Aquí podrías agregar lógica adicional, como limpiar el formulario o mostrar un mensaje de éxito
+        setFecha(''); // Reinicia el campo de fecha
+        setReportes(ubicaciones.reduce((acc, ubicacion) => {
+          acc[ubicacion] = {
+            mareaAlta: { horario: '', medida: '' },
+            mareaBaja: { horario: '', medida: '' },
+            puntacion: 0,
+            tempMax: '',
+            tempMin: '',
+            clima: '',
+            tempMar: '',
+            dirViento: '',
+            velocidadViento: '',
+            dirSwell: '',
+            olaPeriodo: { altura: '', segundos: '' },
+            descripcion: '',
+            noReporte: false, // Reinicia la propiedad noReporte
+          };
+          return acc;
+        }, {}));
+      } else {
+        console.error('Error al enviar el reporte');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>

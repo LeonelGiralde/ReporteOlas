@@ -1,19 +1,12 @@
 import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config(); // Cargar variables de entorno
 
-let client;
-
-export const connectToDatabase = async () => {
-    if (!client) {
-        client = new MongoClient(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-        await client.connect();
-        console.log("Conectado a MongoDB Atlas");
-    }
+const connectToDatabase = async () => {
+    const client = new MongoClient(process.env.MONGO_URI);
+    await client.connect();
     return client;
 };
 
+export { connectToDatabase };

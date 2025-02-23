@@ -1,37 +1,14 @@
-const { MongoClient } = require('mongodb');
-const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri);
+// controllers/reporteController.js
+import { db } from '../config/db.js'; // Asegúrate de que la ruta sea correcta
 
-async function obtenerReportes(req, res) {
+export const crearReporte = async (req, res) => {
+    const { fecha, reportes } = req.body; // Desestructura los datos del cuerpo de la solicitud
+
     try {
-        await client.connect();
-        const database = client.db('nombre_de_tu_base_de_datos');
-        const collection = database.collection('reportes');
-        const reportes = await collection.find().toArray();
-        res.status(200).json(reportes);
+        // Inserta el nuevo reporte en la colección
+        await db.collection('reportes').insertOne({ fecha, reportes });
+        res.status(201).json({ message: 'Reporte guardado exitosamente.' });
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener reportes', error });
-    } finally {
-        await client.close();
+        res.status(500).send("Error al guardar el reporte.");
     }
-}
-
-async function agregarReporte(req, res) {
-    try {
-        const nuevoReporte = req.body;
-        await client.connect();
-        const database = client.db('nombre_de_tu_base_de_datos');
-        const collection = database.collection('reportes');
-        const resultado = await collection.insertOne(nuevoReporte);
-        res.status(201).json({ message: 'Reporte agregado', id: resultado.insertedId });
-    } catch (error) {
-        res.status(500).json({ message: 'Error al agregar reporte', error });
-    } finally {
-        await client.close();
-    }
-}
-
-module.exports = {
-    obtenerReportes,
-    agregarReporte
 };
