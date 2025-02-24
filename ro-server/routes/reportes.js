@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { crearReporte, obtenerReportes, updateReporte, deleteReporte } = require('../controllers/reporteController');
+const { crearReporte, obtenerReportes, updateReporte } = require('../controllers/reporteController');
+const Reporte = require('../models/reporte'); // Asegúrate de que la ruta sea correcta
 
 // Ruta para obtener todos los reportes
 router.get('/', obtenerReportes);
@@ -8,9 +9,11 @@ router.get('/', obtenerReportes);
 // Ruta para crear un nuevo reporte
 router.post('/', crearReporte);
 
-router.put('/reportes/:id', updateReporte);
+// Ruta para actualizar un reporte
+router.put('/:id', updateReporte); // Ajuste aquí, eliminando "reportes/"
 
-router.delete('/reportes/:id', async (req, res) => {
+// Ruta para eliminar un reporte
+router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const deletedReporte = await Reporte.findByIdAndDelete(id);
@@ -22,4 +25,5 @@ router.delete('/reportes/:id', async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar el reporte', error });
     }
 });
+
 module.exports = router;
