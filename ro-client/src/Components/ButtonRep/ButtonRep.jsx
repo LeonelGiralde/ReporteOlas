@@ -10,7 +10,7 @@ function ButtonRep() {
   return (
     <div>
       <button className="btn btn-primary" onClick={handleClick}>
-        Crear Reporte
+        Crear Reporte.
       </button>
     </div>
   );
